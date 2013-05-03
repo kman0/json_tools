@@ -14,11 +14,12 @@ def diff(local, other):
 
     def _recursive_diff(l, r, res, path='/'):
         if type(l) != type(r):
-            res.append({'replace': path,
-                        'value': r,
-                        'details': 'type',
-                        'prev': l
-                       })
+            res.append({
+                'replace': path,
+                'value': r,
+                'details': 'type',
+                'prev': l
+            })
         delim = '/' if path != '/' else ''
 
         if isinstance(l, dict):
@@ -31,34 +32,38 @@ def diff(local, other):
             for k, v in r.iteritems():
                 if k in l:
                     continue
-                res.append({'add': delim.join([path, k]),
-                            'value': v
-                           })
+                res.append({
+                    'add': delim.join([path, k]),
+                    'value': v
+                })
         elif isinstance(l, list):
             ll = len(l)
             lr = len(r)
             if ll > lr:
                 for i, item in enumerate(l[lr:], start=lr):
-                    res.append({'remove': '{0}[{1}]'.format(path, i),
-                                'prev': item,
-                                'details': 'array-item'
-                               })
+                    res.append({
+                        'remove': delim.join([path, str(i)]),
+                        'prev': item,
+                        'details': 'array-item'
+                    })
             elif lr > ll:
                 for i, item in enumerate(r[ll:], start=ll):
-                    res.append({'add': '{0}[{1}]'.format(path, i),
-                                'value': item,
-                                'details': 'array-item'
-                               })
+                    res.append({
+                        'add': delim.join([path, str(i)]),
+                        'value': item,
+                        'details': 'array-item'
+                    })
             minl = min(ll, lr)
             if minl > 0:
                 for i, item in enumerate(l[:minl]):
-                    _recursive_diff(item, r[i], res)
+                    _recursive_diff(item, r[i], res, delim.join([path, str(i)]))
         else:  # both items are atomic
             if l != r:
-                res.append({'replace': path,
-                            'value': r,
-                            'prev': l
-                           })
+                res.append({
+                    'replace': path,
+                    'value': r,
+                    'prev': l
+                })
 
     result = []
     _recursive_diff(local, other, result)

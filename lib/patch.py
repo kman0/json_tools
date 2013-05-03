@@ -37,7 +37,7 @@ def add(data, path, value, replace=False):
                 break
             for i in range(len(d), name):
                 d.append(None)
-            d.append({})
+            #d.append({})
         if pos == 0:
             d[name] = value
         else:
@@ -58,14 +58,24 @@ def remove(data, path):
     d = data
     for node in nodes:
         name = node['name']
-        if name not in d:
-            return
-        else:
-            pos -= 1
-            if pos == 0:
-                del d[name]
+        if node['t'] in ('object', 'array'):
+            if name not in d:
+                return
             else:
-                d = d[name]
+                pos -= 1
+                if pos == 0:
+                    del d[name]
+                else:
+                    d = d[name]
+        else:  # array-index
+            if name >= len(d):
+                return
+            else:
+                pos -= 1
+                if pos == 0:
+                    del d[name]
+                else:
+                    d = d[name]
     return data
 
 

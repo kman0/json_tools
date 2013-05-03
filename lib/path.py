@@ -9,11 +9,17 @@
 def split(path):
     result = []
     for node in path.split('/')[1:]:
-        if '[' in node and ']' in node:
-            array, index = node.split('[')
-            result.append({'t': 'array', 'name': array})
-            result.append({'t': 'index', 'name': int(index[:-1])})
-        else:
+        try:
+            index = int(node)
+        except ValueError:
             result.append({'t': 'object', 'name': node})
-    return result
+        else:
+            if not len(result):
+                # path starts with an integer, e.g. "/1/foo/bar". The
+                # root-level object is an array. We don't support this (yet).
+                raise NotImplementedError('json_tools does not (yet) support '
+                                          'arrays at the root level.')
+            result[len(result) - 1]['t'] = 'array'
+            result.append({'t': 'index', 'name': index})
 
+    return result
