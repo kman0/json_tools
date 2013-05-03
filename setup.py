@@ -6,7 +6,7 @@ from setuptools import setup
 
 setup(
     name='json_tools',
-    version='0.1.29',
+    version='0.2.0',
 
     packages=['json_tools'],
     package_dir={'json_tools': 'lib'},
@@ -24,17 +24,17 @@ setup(
 
     description='A set of tools to manipulate JSON: diff, patch, pretty-printing',
     classifiers=[
-          'Development Status :: 3 - Alpha',
-          'Environment :: Console',
-          'Intended Audience :: Developers',
-          'Intended Audience :: System Administrators',
-          'Operating System :: Unix',
-          'Programming Language :: Python',
-          'Programming Language :: Python :: 2.6',
-          'Topic :: Software Development',
-          'Topic :: Software Development :: Libraries',
-          'Topic :: Software Development :: Libraries :: Python Modules',
-          'Topic :: Utilities'
+        'Development Status :: 3 - Alpha',
+        'Environment :: Console',
+        'Intended Audience :: Developers',
+        'Intended Audience :: System Administrators',
+        'Operating System :: Unix',
+        'Programming Language :: Python',
+        'Programming Language :: Python :: 2.6',
+        'Topic :: Software Development',
+        'Topic :: Software Development :: Libraries',
+        'Topic :: Software Development :: Libraries :: Python Modules',
+        'Topic :: Utilities'
     ],
     long_description="""
     json_tools is a Python package and CLI utility set to manipulate JSON documents
@@ -54,7 +54,7 @@ setup(
     The ``file_name`` is optional: if not given the input document is read from STDIN.
 
     Options
-    -------
+    ^^^^^^^
     ``-c, --color``
         Colorize output (used only in TTY mode).
 
