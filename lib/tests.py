@@ -2,7 +2,42 @@
 #-*- coding:utf-8 -*-
 import logging
 import pprint
-from json_tools import diff, patch
+
+from diff import diff
+from patch import patch
+from path import split, join, resolve
+
+
+def test_jpath_split():
+    jpath = '$.a[0].b[1].65536[2][3]'
+    assert jpath == join(split(jpath))
+
+
+def test_jpath_resolve():
+    jpath = '$.a[0].b[1].65536[2][3]'
+    doc = {
+        'a': [
+            {
+                'b': [
+                    'crap',
+                    {
+                        '65536': [
+                            [],
+                            ['before'],
+                            [
+                                None, None, 'before', 'hit', 'after'
+                            ],
+                            ['after']
+                        ]
+                    }
+                ]
+            },
+            {
+                'x': 'y'
+            }
+        ]
+    }
+    assert resolve(doc, jpath) == 'hit'
 
 
 def test_simple_diff():
@@ -69,6 +104,22 @@ def test_nested_array_patch():
     patched = patch(local, delta)
     logging.debug('patched == %s', pprint.pformat(patched))
     assert patched == other
+
+
+def test_root_array():
+    doc = [1, {'a': 2}]
+    p = [{'add': '/1/b', 'value': 'test'}]
+    assert patch(doc, p) == [1, {'a': 2, 'b': 'test'}]
+
+
+def test_create_array():
+    doc = {'a': 1}
+    p = [{'add': '$.b[5]', 'value': 1}]
+    assert patch(doc, p) == {'a': 1, 'b': [None] * 5 + [1]}
+
+    doc = {}
+    p = [{'add': '/b/2/1/3/a', 'value': 2}]
+    assert patch(doc, p) == {'b': [None, None, [None, [None, None, None, {'a': 2}]]]}
 
 
 if __name__ == '__main__':

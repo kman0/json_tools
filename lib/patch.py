@@ -7,7 +7,7 @@
 
 from __future__ import print_function
 
-from json_tools.path import split
+from path import split
 
 
 def add(data, path, value, replace=False):
@@ -17,31 +17,37 @@ def add(data, path, value, replace=False):
     """
 
     nodes = split(path)
-    pos = len(nodes)
     d = data
-    for node in nodes:
-        name = node['name']
-        pos -= 1
-        if node['t'] == 'object':
-            if name not in d:
-                d[name] = {}
-            elif pos == 0 and not replace:
-                break
-        elif node['t'] == 'array':
-            if name not in d:
-                d[name] = []
-            elif pos == 0 and not replace:
-                break
-        else:  # array-index
-            if name < len(d) and pos == 0 and not replace:
-                break
-            for i in range(len(d), name):
-                d.append(None)
-            #d.append({})
-        if pos == 0:
-            d[name] = value
-        else:
+    for pos, (t, name) in enumerate(nodes[:-1]):
+        if t == 'object-field' and not isinstance(d, dict):
+            raise ValueError('Expected a JSON object for {}'.format(name))
+        elif t == 'array-index' and not isinstance(d, list):
+            raise ValueError('Expected a JSON array for {}'.format(name))
+
+        try:
             d = d[name]
+        except IndexError:
+            while len(d) < name:
+                d.append(None)
+            if nodes[pos + 1][0] == 'array-index':
+                d.append([])
+            else:
+                d.append({})
+            d = d[name]
+        except:
+            next_t, next_v = nodes[pos + 1]
+            if next_t == 'object-field':
+                d[name] = {}
+            elif next_t == 'array-index':
+                d[name] = []
+            d = d[name]
+
+    t, name = nodes[-1]
+    if t == 'array-index':
+        while len(d) < name + 1:
+            d.append(None)
+    d[name] = value
+
     return data
 
 
@@ -54,35 +60,25 @@ def replace(data, path, value):
 
 def remove(data, path):
     nodes = split(path)
-    pos = len(nodes)
     d = data
-    for node in nodes:
-        name = node['name']
-        if node['t'] in ('object', 'array'):
-            if name not in d:
+    for t, name in nodes[:-1]:
+        if t == 'object-field':
+            if not isinstance(d, dict) or name not in d:
                 return
-            else:
-                pos -= 1
-                if pos == 0:
-                    del d[name]
-                else:
-                    d = d[name]
-        else:  # array-index
-            if name >= len(d):
+        elif t == 'array-index':
+            if not isinstance(d, list) or name >= len(d):
                 return
-            else:
-                pos -= 1
-                if pos == 0:
-                    del d[name]
-                else:
-                    d = d[name]
+        d = d[name]
+    try:
+        del d[nodes[-1][1]]
+    except:
+        pass
     return data
 
 
 def patch(data, patch):
     """ Apply a JSON @a patch to the given JSON object @a data.
     """
-
     for change in patch:
         if 'add' in change:
             add(data, change['add'], change['value'])
@@ -94,33 +90,39 @@ def patch(data, patch):
 
 
 if __name__ == '__main__':
+    import argparse
+    parser = argparse.ArgumentParser("Apply a JSON patch")
+    parser.add_argument('-c', '--colorize', action='store_true',
+                        help='Colorize the output')
+    parser.add_argument('-i', '--inplace', action='store_true',
+                        help='Edit the input file inplace')
+    parser.add_argument('input', help='Path to the file to be patched')
+    parser.add_argument('patch', nargs='*', help='Path to a single patch')
+    args = parser.parse_args()
+
     import json
-    from sys import argv, stderr
+    from sys import stderr
     from printer import print_json
 
     try:
-        argv.remove('--pretty')
-        pretty = True
-    except ValueError:
-        pretty = False
-
-    if len(argv) < 3:
-        print("Usage:", argv[0], "[options] path/to.json path/to.patch")
-        exit(-1)
-
-    try:
-        with open(argv[1]) as f:
+        with open(args.input) as f:
             data = json.load(f)
     except IOError:
         print('Local not found', file=stderr)
         exit(-1)
 
-    try:
-        with open(argv[2]) as f:
-            _patch = json.load(f)
-    except IOError:
-        print('Patch not found', file=stderr)
-        exit(-1)
+    for patch_file in args.patch:
+        try:
+            with open(patch_file) as f:
+                _patch = json.load(f)
+        except IOError:
+            print('Patch not found', file=stderr)
+            exit(-1)
 
-    res = patch(data, _patch)
-    print_json(res, pretty)
+        data = patch(data, _patch)
+
+    if not args.inplace:
+        print_json(data, args.colors)
+    else:
+        with open(args.input, 'w') as f:
+            json.dump(data, f, indent=4)
