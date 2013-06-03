@@ -56,7 +56,8 @@ def _split_json_path(path):
             raise JSONPathError('Keys must start with an alphanumeric')
         else:
             # The key contains at least one array indexing expression
-            result.append(('object-field', key[0:field_end]))
+            if field_end > 0:
+                result.append(('object-field', key[0:field_end]))
 
             if not re.match(r'\[\d+\]+', key[field_end:]):
                 raise JSONPathError('Invalid syntax in {}'.format(key))
