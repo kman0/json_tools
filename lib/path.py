@@ -107,15 +107,95 @@ def join(path):
     return res
 
 
+def _check_type(t, doc):
+    if t == 'object-field' and not isinstance(doc, dict):
+        raise ValueError('Expected an object for')
+    elif t == 'array-index' and not isinstance(doc, list):
+        raise ValueError('Expected a list')
+
+
 def resolve(doc, path):
     """ Resolves the given :path against :doc.
     """
     d = doc
     for t, v in split(path):
-        if t == 'object-field' and not isinstance(d, dict):
-            raise ValueError('Expected an object for {}'.format(v))
-        elif t == 'array-index' and not isinstance(d, list):
-            raise ValueError('Expected a list for {}'.format(v))
+        _check_type(t, d)
         d = d[v]
 
     return d
+
+
+def create(path, value=None):
+    """ Create a minimal JSON document, against which the given :path
+        can be resolved.
+
+        The final node is initialized with :value.
+    """
+    nodes = split(path)
+
+    def descend(tail):
+        if not tail:
+            return value
+
+        t, v = tail[0]
+        if t == 'object-field':
+            d = {v: descend(tail[1:])}
+        else:
+            d = [None] * v + [descend(tail[1:])]
+        return d
+
+    return descend(nodes)
+
+
+def find(doc, path, joined=False):
+    """ Find a minimal subsequence of :path in the JSON document :doc.
+
+        Returns a tuple (found, not_found, doc), where
+            * 'found' is the matched parted of :path;
+            * 'not_found' is the remainder of the :path;
+            * 'doc' is the object pointed by 'found'.
+    """
+    nodes = split(path)
+    if not nodes:
+        if not joined:
+            return ([], [], doc)
+        else:
+            return ('$', '$', doc)
+
+    d = doc
+    for i, (t, v) in enumerate(nodes):
+        try:
+            _check_type(t, d)
+        except ValueError:
+            break
+
+        try:
+            d = d[v]
+        except (KeyError, IndexError):
+            break
+    else:
+        # Full path has been matched
+        i += 1
+
+    if not joined:
+        return (nodes[:i], nodes[i:], d)
+    else:
+        return (join(nodes[:i]), join(nodes[i:]), d)
+
+
+if __name__ == '__main__':
+    doc = {
+        'a': [
+            None,
+            {
+                'b': 3
+            }
+        ]
+    }
+
+    print find(doc, '$')
+    print find(doc, '$.b')
+    print find(doc, '$.a.b')
+    print find(doc, '$.a[1]')
+    print find(doc, '$.a[1].b')
+    print find(doc, '$.a[1].b.c')

@@ -8,38 +8,6 @@ from patch import patch
 from path import split, join, resolve
 
 
-def test_jpath_split():
-    jpath = '$.a[0].b[1].65536[2][3]'
-    assert jpath == join(split(jpath))
-
-
-def test_jpath_resolve():
-    jpath = '$.a[0].b[1].65536[2][3]'
-    doc = {
-        'a': [
-            {
-                'b': [
-                    'crap',
-                    {
-                        '65536': [
-                            [],
-                            ['before'],
-                            [
-                                None, None, 'before', 'hit', 'after'
-                            ],
-                            ['after']
-                        ]
-                    }
-                ]
-            },
-            {
-                'x': 'y'
-            }
-        ]
-    }
-    assert resolve(doc, jpath) == 'hit'
-
-
 def test_simple_diff():
     local = {'foo': 1, 'bar': 2}
     other = {'foo': 2, 'baz': 3}
