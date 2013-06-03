@@ -7,59 +7,45 @@
 
 from __future__ import print_function
 
-from path import split
+import path
 
 
-def add(data, path, value, replace=False):
-    """ Add a new value to the given JSON document @a data at JSON-path @a path.
+def add(data, jpath, value, replace=False):
+    """ Add a new value to the given JSON document :data at JSON-path :path.
 
         If the the path is already used, then no changes are made.
     """
+    match, remainder, d, reason = path.find(data, jpath)
 
-    nodes = split(path)
-    d = data
-    for pos, (t, name) in enumerate(nodes[:-1]):
-        if t == 'object-field' and not isinstance(d, dict):
-            raise ValueError('Expected a JSON object for {}'.format(name))
-        elif t == 'array-index' and not isinstance(d, list):
-            raise ValueError('Expected a JSON array for {}'.format(name))
+    if reason == 'type':
+        raise TypeError('Bad subdoc type after {}'.format(path.join(match)))
 
-        try:
-            d = d[name]
-        except IndexError:
+    if not reason:
+        if replace:
+            d = path.resolve(data, match[:-1])
+            d[match[-1][1]] = value
+    else:
+        sub_doc = path.create(remainder[1:], value)
+        name = remainder[0][1]
+        if reason == 'key':
+            d[name] = sub_doc
+        elif reason == 'index':
             while len(d) < name:
                 d.append(None)
-            if nodes[pos + 1][0] == 'array-index':
-                d.append([])
-            else:
-                d.append({})
-            d = d[name]
-        except:
-            next_t, next_v = nodes[pos + 1]
-            if next_t == 'object-field':
-                d[name] = {}
-            elif next_t == 'array-index':
-                d[name] = []
-            d = d[name]
-
-    t, name = nodes[-1]
-    if t == 'array-index':
-        while len(d) < name + 1:
-            d.append(None)
-    d[name] = value
+            d.append(sub_doc)
 
     return data
 
 
-def replace(data, path, value):
+def replace(data, jpath, value):
     """ Replace the value of the document's subelement at @a path with value
         @a value.
     """
-    return add(data, path, value, True)
+    return add(data, jpath, value, True)
 
 
-def remove(data, path):
-    nodes = split(path)
+def remove(data, jpath):
+    nodes = path.split(jpath)
     d = data
     for t, name in nodes[:-1]:
         if t == 'object-field':

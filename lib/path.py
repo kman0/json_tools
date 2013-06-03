@@ -114,25 +114,32 @@ def _check_type(t, doc):
         raise ValueError('Expected a list')
 
 
-def resolve(doc, path):
+def _make_nodes(jpath):
+    if isinstance(jpath, basestring):
+        return split(jpath)
+    elif isinstance(jpath, list):
+        return jpath
+    else:
+        raise TypeError('JSON path must be a string or a list of tuples')
+
+
+def resolve(doc, jpath):
     """ Resolves the given :path against :doc.
     """
     d = doc
-    for t, v in split(path):
+    for t, v in _make_nodes(jpath):
         _check_type(t, d)
         d = d[v]
 
     return d
 
 
-def create(path, value=None):
+def create(jpath, value=None):
     """ Create a minimal JSON document, against which the given :path
         can be resolved.
 
         The final node is initialized with :value.
     """
-    nodes = split(path)
-
     def descend(tail):
         if not tail:
             return value
@@ -144,58 +151,43 @@ def create(path, value=None):
             d = [None] * v + [descend(tail[1:])]
         return d
 
-    return descend(nodes)
+    return descend(_make_nodes(jpath))
 
 
-def find(doc, path, joined=False):
+def find(doc, jpath, joined=False):
     """ Find a minimal subsequence of :path in the JSON document :doc.
 
-        Returns a tuple (found, not_found, doc), where
+        Returns a tuple (found, not_found, doc, reason), where
             * 'found' is the matched parted of :path;
             * 'not_found' is the remainder of the :path;
-            * 'doc' is the object pointed by 'found'.
+            * 'doc' is the object pointed by 'found';
+            * 'reason' is an explanation of why the matching failed (possible
+               values: None - all matched, 'type', 'key', 'index').
     """
-    nodes = split(path)
-    if not nodes:
-        if not joined:
-            return ([], [], doc)
-        else:
-            return ('$', '$', doc)
-
+    nodes = _make_nodes(jpath)
     d = doc
+    reason = None
+    i = 0
     for i, (t, v) in enumerate(nodes):
         try:
             _check_type(t, d)
         except ValueError:
+            reason = 'type'
             break
 
         try:
             d = d[v]
-        except (KeyError, IndexError):
+        except KeyError:
+            reason = 'key'
+            break
+        except IndexError:
+            reason = 'index'
             break
     else:
         # Full path has been matched
         i += 1
 
     if not joined:
-        return (nodes[:i], nodes[i:], d)
+        return (nodes[:i], nodes[i:], d, reason)
     else:
-        return (join(nodes[:i]), join(nodes[i:]), d)
-
-
-if __name__ == '__main__':
-    doc = {
-        'a': [
-            None,
-            {
-                'b': 3
-            }
-        ]
-    }
-
-    print find(doc, '$')
-    print find(doc, '$.b')
-    print find(doc, '$.a.b')
-    print find(doc, '$.a[1]')
-    print find(doc, '$.a[1].b')
-    print find(doc, '$.a[1].b.c')
+        return (join(nodes[:i]), join(nodes[i:]), d, reason)

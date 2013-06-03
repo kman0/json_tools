@@ -51,6 +51,7 @@ def test_simple_patch():
     other = {'foo': 2, 'baz': 3}
     delta = diff(local, other)
     patched = patch(local, delta)
+    logging.debug('delta == %s', pprint.pformat(delta))
     logging.debug('patched == %s', pprint.pformat(patched))
     assert patched == other
 

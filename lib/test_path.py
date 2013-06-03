@@ -95,12 +95,12 @@ def test_find():
         ]
     }
 
-    assert find(doc, '$', True) == ('$', '$', doc)
-    assert find(doc, '$.b', True) == ('$', '$.b', doc)
-    assert find(doc, '$.a.b', True) == ('$.a', '$.b', doc['a'])
-    assert find(doc, '$.a[1]', True) == ('$.a[1]', '$', doc['a'][1])
-    assert find(doc, '$.a[1].b', True) == ('$.a[1].b', '$', doc['a'][1]['b'])
-    assert find(doc, '$.a[1].b.c', True) == ('$.a[1].b', '$.c', doc['a'][1]['b'])
+    assert find(doc, '$', True) == ('$', '$', doc, None)
+    assert find(doc, '$.b', True) == ('$', '$.b', doc, 'key')
+    assert find(doc, '$.a.b', True) == ('$.a', '$.b', doc['a'], 'type')
+    assert find(doc, '$.a[1]', True) == ('$.a[1]', '$', doc['a'][1], None)
+    assert find(doc, '$.a[1].b', True) == ('$.a[1].b', '$', doc['a'][1]['b'], None)
+    assert find(doc, '$.a[1].b.c', True) == ('$.a[1].b', '$.c', doc['a'][1]['b'], 'type')
 
     doc = [
         [
@@ -112,10 +112,10 @@ def test_find():
         ]
     ]
 
-    assert find(doc, '$[0].a', True) == ('$[0]', '$.a', doc[0])
-    assert find(doc, '$[0][0].a', True) == ('$[0][0].a', '$', doc[0][0]['a'])
-    assert find(doc, '$[0][0].a.c', True) == ('$[0][0].a', '$.c', doc[0][0]['a'])
-    assert find(doc, '$[0][0].a.b', True) == ('$[0][0].a.b', '$', doc[0][0]['a']['b'])
+    assert find(doc, '$[0].a', True) == ('$[0]', '$.a', doc[0], 'type')
+    assert find(doc, '$[0][0].a', True) == ('$[0][0].a', '$', doc[0][0]['a'], None)
+    assert find(doc, '$[0][0].a.c', True) == ('$[0][0].a', '$.c', doc[0][0]['a'], 'key')
+    assert find(doc, '$[0][0].a.b', True) == ('$[0][0].a.b', '$', doc[0][0]['a']['b'], None)
 
 
 if __name__ == '__main__':
