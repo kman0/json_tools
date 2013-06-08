@@ -6,7 +6,7 @@ from setuptools import setup
 
 setup(
     name='json_tools',
-    version='0.2.0',
+    version='0.3.0',
 
     packages=['json_tools'],
     package_dir={'json_tools': 'lib'},
@@ -24,7 +24,7 @@ setup(
 
     description='A set of tools to manipulate JSON: diff, patch, pretty-printing',
     classifiers=[
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 4 - Beta',
         'Environment :: Console',
         'Intended Audience :: Developers',
         'Intended Audience :: System Administrators',
