@@ -34,7 +34,7 @@ def print_json(data, pretty=False, tab_size=4):
         if isinstance(chunk, dict):
             print(' ' * indent if context == 'array' else '', LBRACE, sep='')
             l = len(chunk)
-            for i, (k, v) in enumerate(chunk.iteritems(), 1):
+            for i, (k, v) in enumerate(sorted(chunk.items()), 1):
                 print(' ' * (indent + tab_size), '"',
                       _apply_style(k, 'yellow', bold=True), sep='', end='": ')
                 _recursive_print(v, indent + tab_size, i < l)
