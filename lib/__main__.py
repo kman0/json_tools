@@ -79,48 +79,10 @@ def diff():
     json_tools.print_json(res, options.colors)
 
 
-def patch():
-    parser = OptionParser()
-    parser.add_option("-c", "--color", dest="colors", action="store_true",
-                      help="Colorize the output", default=False)
-    options, files = parser.parse_args()
-    if len(files) == 1:
-        source = '/dev/stdin'
-        patch = files[0]
-    elif len(files) >= 2:
-        source, patch = files[0:2]
-    else:
-        print("Need at least 1 JSON files", file=sys.stderr)
-        exit(-1)
-
-    try:
-        with open(source) as f:
-            data = json.load(f)
-    except IOError:
-        print('Source file not found', file=sys.stderr)
-        exit(-1)
-    except KeyError:
-        print('Path to file not specified', file=sys.stderr)
-        exit(-1)
-
-    try:
-        with open(patch) as f:
-            patch = json.load(f)
-    except IOError:
-        print('Patch not found', file=sys.stderr)
-        exit(-1)
-    except KeyError:
-        print('Path to other file not specified', file=sys.stderr)
-        exit(-1)
-
-    res = json_tools.patch(data, patch)
-    json_tools.print_json(res, options.colors)
-
-
 COMMANDS = {
     'print': pretty_print,
     'diff': diff,
-    'patch': patch
+    'patch': json_tools._patch_main
 }
 
 

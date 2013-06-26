@@ -75,7 +75,7 @@ def patch(data, patch):
     return data
 
 
-if __name__ == '__main__':
+def main():
     import argparse
     parser = argparse.ArgumentParser("Apply a JSON patch")
     parser.add_argument('-c', '--colorize', action='store_true',
@@ -112,3 +112,7 @@ if __name__ == '__main__':
     else:
         with open(args.input, 'w') as f:
             json.dump(data, f, indent=4)
+
+
+if __name__ == '__main__':
+    main()

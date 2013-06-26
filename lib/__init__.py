@@ -15,4 +15,4 @@ from __future__ import print_function
 
 from printer import print_json
 from diff import diff
-from patch import patch
+from patch import patch, main as _patch_main
