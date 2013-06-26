@@ -81,7 +81,7 @@ def main():
     import json
     from printer import print_json
 
-    parser = argparse.ArgumentParser("Apply a JSON patch")
+    parser = argparse.ArgumentParser("json patch")
     parser.add_argument('-c', '--colorize', action='store_true',
                         help='Colorize the output', default=True)
     parser.add_argument('-i', '--inplace', action='store_true',

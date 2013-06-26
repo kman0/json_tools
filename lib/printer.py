@@ -67,7 +67,7 @@ def print_json(data, pretty=False, tab_size=4, f=sys.stdout):
 def main():
     import argparse
 
-    parser = argparse.ArgumentParser("Pretty-print JSON")
+    parser = argparse.ArgumentParser("json print")
     parser.add_argument('-c', '--colorize', action='store_true',
                         help='Colorize the output', default=True, dest='pretty')
     parser.add_argument('-p', '--pretty', action='store_true',
