@@ -8,6 +8,11 @@ Installation
 
     $ pip install json_tools
 
+Release notes
+-------------
+
+Check the project's [Wiki](https://bitbucket.org/vadim_semenov/json_tools/wiki/Release%20Notes)
+
 Usage
 -----
 
@@ -19,14 +24,16 @@ There are two ways of using *json_tools*:
 ### CLI interface
 
 After you've installed *json_tools* you can access it via `json` command in the
-shell. It provides a pretty simple yet powerful interface to manipulate JSON 
+shell. It provides a pretty simple yet powerful interface to manipulate JSON
 documents:
 
- *  **print** - pretty-print your JSON optionally colorizing it
+ *  `print [input_file]`
 
-    **Options:**
+    Pretty-print a JSON file with syntax highlighting and keys sorting.
 
-    `-c, --color` Colorizes output.
+    If `input_file` is omitted or equals `-`, reads JSON from STDIN.
+
+    **Example:**
 
         $ echo '{"Hello": ["w", "o", "r", "l", "d", "!"]}' | json print
         {
@@ -40,11 +47,13 @@ documents:
             ]
         }
 
- *  **diff** - calculate difference between two JSON documents as a JSON patch:
+ *  `diff [file1] [file2]`
 
-    **Options:**
+    Calculate difference between two JSON documents and output it in JSON patch format.
 
-    `-c, --color` Colorizes output.
+    Either `file1` or `file2` can be set to `-`, in order to read JSON from STDIN.
+
+    **Example:**
 
         $ json diff doc1.json doc2.json
         [
@@ -60,10 +69,18 @@ documents:
             }
         ]
 
- *  **patch** - modify the JSON document using JSON patch and print the 
-    resulting document to STDOUT.
+ *  `patch [options] input [patch [patch ...]]`
 
-        $ json diff doc.json patch.json
+    Modify the JSON file `input` using a series of JSON `patch`es.
+
+    If `patch` is omitted or equals `-`, its content is read from STDIN.
+
+    **Options:**
+
+    `-i, --inplace`
+
+    Modify `source_file` inplace instead of printing it to STDOUT.
+
 
 ### Pythonic interface
 
@@ -73,10 +90,8 @@ TBD
 Planned features
 ----------------
 
- 1. Support more JSON patch options: currently *json_tools* only supports 
+ 1. Support more JSON patch options: currently *json_tools* only supports
     *add*, *remove* and *replace*.
- 1. Add an option to sort documents' fields alphabetically (they're being 
-    output in the order of Python dict iteration at the moment).
  1. Make **diff** output more human readable (not JSONish).
  1. Improve documentation.
 

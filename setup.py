@@ -3,10 +3,16 @@
 
 from setuptools import setup
 
+try:
+    import pypandoc
+    description = pypandoc.convert('README.md', 'rst')
+except:
+    description = ''
+
 
 setup(
     name='json_tools',
-    version='0.3.0',
+    version='0.3.1',
 
     packages=['json_tools'],
     package_dir={'json_tools': 'lib'},
@@ -36,42 +42,8 @@ setup(
         'Topic :: Software Development :: Libraries :: Python Modules',
         'Topic :: Utilities'
     ],
-    long_description="""
-    json_tools is a Python package and CLI utility set to manipulate JSON documents
-    using JSON patch specification: <http://tools.ietf.org/html/draft-ietf-appsawg-json-patch-02>
 
-    Installation
-    ============
-    ``pip install json_tools``
+    keywords=['json'],
 
-    Usage (CLI)
-    ===========
-
-    Pretty-printing
-    ---------------
-    ``json print [options] [file_name]``
-
-    The ``file_name`` is optional: if not given the input document is read from STDIN.
-
-    Options
-    ^^^^^^^
-    ``-c, --color``
-        Colorize output (used only in TTY mode).
-
-
-    Diff
-    ----
-    ``json diff first.json second.json``
-
-    Patch
-    -----
-    ``json patch document.json patch.json``
-
-
-    Source code
-    ===========
-
-    Source code and Wiki are available on BitBucket: <https://bitbucket.org/vadim_semenov/json_tools>
-    Feel free to fork and make bug-reports/feature-requests.
-    """
+    long_description=description
 )
