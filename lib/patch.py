@@ -77,41 +77,28 @@ def patch(data, patch):
 
 def main():
     import argparse
-    parser = argparse.ArgumentParser("Apply a JSON patch")
-    parser.add_argument('-c', '--colorize', action='store_true',
-                        help='Colorize the output')
-    parser.add_argument('-i', '--inplace', action='store_true',
-                        help='Edit the input file inplace')
-    parser.add_argument('input', help='Path to the file to be patched')
-    parser.add_argument('patch', nargs='*', help='Path to a single patch')
-    args = parser.parse_args()
-
+    import sys
     import json
-    from sys import stderr
     from printer import print_json
 
-    try:
-        with open(args.input) as f:
-            data = json.load(f)
-    except IOError:
-        print('Local not found', file=stderr)
-        exit(-1)
+    parser = argparse.ArgumentParser("Apply a JSON patch")
+    parser.add_argument('-c', '--colorize', action='store_true',
+                        help='Colorize the output', default=True)
+    parser.add_argument('-i', '--inplace', action='store_true',
+                        help='Edit the input file inplace')
+    parser.add_argument('input', help='Path to the file to be patched',
+                        type=argparse.FileType('r'))
+    parser.add_argument('patch', nargs='*', help='Path to a single patch',
+                        type=argparse.FileType('r'), default=[sys.stdin])
+    args = parser.parse_args()
+
+    data = json.load(args.input)
 
     for patch_file in args.patch:
-        try:
-            with open(patch_file) as f:
-                _patch = json.load(f)
-        except IOError:
-            print('Patch not found', file=stderr)
-            exit(-1)
+        data = patch(data, json.load(patch_file))
 
-        data = patch(data, _patch)
-
-    if not args.inplace:
-        print_json(data, args.colors)
-    else:
-        with open(args.input, 'w') as f:
-            json.dump(data, f, indent=4)
+    f = open(args.input.name, 'w') if args.inplace else sys.stdout
+    print_json(data, args.colorize, f=f)
 
 
 if __name__ == '__main__':

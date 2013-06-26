@@ -26,12 +26,18 @@ _STYLES = {
     'blue': colorama.Fore.BLUE,
 }
 
+USE_COLORS = False
 
-try:
-    USE_COLORS = os.isatty(sys.stdout.fileno())
-except AttributeError:
-    # If sys.stdout is a StringIO instance it will not have a fileno attribute
-    USE_COLORS = False
+
+def check_color_caps(f):
+    """ Check wether colorization should be applied when printing to file @a f.
+    """
+    global USE_COLORS
+    try:
+        USE_COLORS = os.isatty(f.fileno())
+    except AttributeError:
+        # If sys.stdout is a StringIO instance it will not have a fileno attribute
+        USE_COLORS = False
 
 
 def colorize(text, color='white', bold=False):
