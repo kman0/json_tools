@@ -25,27 +25,6 @@ def usage():
         print("  ", colorize(cmd, bold=True), "\t", info)
 
 
-def pretty_print():
-    parser = OptionParser()
-    parser.add_option("-c", "--color", dest="colors", action="store_true",
-                      help="Colorize the output", default=False)
-    options, files = parser.parse_args()
-    file_name = files[0] if files else '/dev/stdin'
-
-    try:
-        f = open(file_name)
-    except:
-        print("Could not open input file", file=sys.stderr)
-        exit(-1)
-
-    try:
-        data = json.load(f)
-    except IOError:
-        print("Could not decode JSON from the input file", file=sys.stderr)
-        exit(-1)
-    json_tools.print_json(data, options.colors)
-
-
 def diff():
     parser = OptionParser()
     parser.add_option("-c", "--color", dest="colors", action="store_true",
@@ -80,7 +59,7 @@ def diff():
 
 
 COMMANDS = {
-    'print': pretty_print,
+    'print': json_tools._printer_main,
     'diff': diff,
     'patch': json_tools._patch_main
 }

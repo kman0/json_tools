@@ -9,13 +9,15 @@
 from __future__ import print_function
 
 import json
+import sys
 
-from print_style import colorize
+from print_style import colorize, check_color_caps
 
 
-def print_json(data, pretty=False, tab_size=4):
+def print_json(data, pretty=False, tab_size=4, f=sys.stdout):
     """ Prints JSON in a fancy colorized maner.
     """
+    check_color_caps(f)
 
     def _apply_style(text, *args, **kwargs):
         if pretty:
@@ -32,22 +34,23 @@ def print_json(data, pretty=False, tab_size=4):
         """ Recursively pretty-prints a single JSON atom (@a chunk).
         """
         if isinstance(chunk, dict):
-            print(' ' * indent if context == 'array' else '', LBRACE, sep='')
+            print(' ' * indent if context == 'array' else '', LBRACE, sep='', file=f)
             l = len(chunk)
             for i, (k, v) in enumerate(sorted(chunk.items()), 1):
                 print(' ' * (indent + tab_size), '"',
-                      _apply_style(k, 'yellow', bold=True), sep='', end='": ')
+                      _apply_style(k, 'yellow', bold=True),
+                      sep='', end='": ', file=f)
                 _recursive_print(v, indent + tab_size, i < l)
-            print(' ' * indent, RBRACE, ',' if needs_comma else '', sep='')
+            print(' ' * indent, RBRACE, ',' if needs_comma else '', sep='', file=f)
         elif isinstance(chunk, list):
-            print(' ' * indent if context == 'array' else '', LSQ, sep='')
+            print(' ' * indent if context == 'array' else '', LSQ, sep='', file=f)
             l = len(chunk)
             for i, item in enumerate(chunk, 1):
                 _recursive_print(item, indent + tab_size, i < l, 'array')
-            print(' ' * indent, RSQ, ',' if needs_comma else '', sep='')
+            print(' ' * indent, RSQ, ',' if needs_comma else '', sep='', file=f)
         else:
             if context == 'array':
-                print(' ' * indent, end='')
+                print(' ' * indent, end='', file=f)
 
             view = json.dumps(chunk)
             if isinstance(chunk, int):
@@ -56,28 +59,27 @@ def print_json(data, pretty=False, tab_size=4):
                 view = _apply_style(view, 'red')
             elif isinstance(chunk, basestring):
                 view = _apply_style(view, 'green')
-            print(view, ',' if needs_comma else '', sep='')
+            print(view, ',' if needs_comma else '', sep='', file=f)
 
     _recursive_print(data, needs_comma=False)
 
 
+def main():
+    import argparse
+
+    parser = argparse.ArgumentParser("Pretty-print JSON")
+    parser.add_argument('-c', '--colorize', action='store_true',
+                        help='Colorize the output', default=True, dest='pretty')
+    parser.add_argument('-p', '--pretty', action='store_true',
+                        help='Colorize the output', default=True, dest='pretty')
+    parser.add_argument('input', help='Path to the file to be patched',
+                        nargs='?', default=sys.stdin,
+                        type=argparse.FileType('r'))
+    args = parser.parse_args()
+
+    data = json.load(args.input)
+    print_json(data, args.pretty)
+
+
 if __name__ == '__main__':
-    from sys import argv, stdin, stderr
-
-    try:
-        argv.remove('--pretty')
-        pretty = True
-    except ValueError:
-        pretty = False
-
-    if len(argv) == 2:
-        source = open(argv[1])
-    else:
-        source = stdin
-
-    try:
-        doc = json.load(source)
-    except:
-        print("Bad input", file=stderr)
-
-    print_json(doc, pretty)
+    main()
