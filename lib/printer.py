@@ -11,10 +11,11 @@ from __future__ import print_function
 import json
 import sys
 
+import path
 from print_style import colorize, check_color_caps
 
 
-def print_json(data, pretty=False, tab_size=4, f=sys.stdout):
+def print_json(data, jpath, pretty=False, tab_size=4, f=sys.stdout):
     """ Prints JSON in a fancy colorized maner.
     """
     check_color_caps(f)
@@ -61,7 +62,7 @@ def print_json(data, pretty=False, tab_size=4, f=sys.stdout):
                 view = _apply_style(view, 'green')
             print(view, ',' if needs_comma else '', sep='', file=f)
 
-    _recursive_print(data, needs_comma=False)
+    _recursive_print(path.resolve(data, jpath), needs_comma=False)
 
 
 def main():
@@ -72,13 +73,16 @@ def main():
                         help='Colorize the output', default=True, dest='pretty')
     parser.add_argument('-p', '--pretty', action='store_true',
                         help='Colorize the output', default=True, dest='pretty')
+    parser.add_argument('-f', '--filter',
+                        help='Filter using path before printing',
+                        default='/', metavar='JPATH')
     parser.add_argument('input', help='Path to the file to be patched',
                         nargs='?', default=sys.stdin,
                         type=argparse.FileType('r'))
     args = parser.parse_args()
 
     data = json.load(args.input)
-    print_json(data, args.pretty)
+    print_json(data, args.filter, args.pretty)
 
 
 if __name__ == '__main__':
