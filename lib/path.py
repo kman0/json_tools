@@ -19,7 +19,9 @@ def _split_json_pointer(path):
             index = int(key)
         except ValueError:
             # The key contains non-digital symbols
-            result.append(('object-field', key))
+            # Skip empty keys
+            if key:
+                result.append(('object-field', key))
         else:
             # JSON Pointer spec treats numbers as array indices only
             result.append(('array-index', index))
@@ -107,9 +109,9 @@ def join(path):
     return res
 
 
-def _check_type(t, doc):
+def _check_type(t, doc, name):
     if t == 'object-field' and not isinstance(doc, dict):
-        raise ValueError('Expected an object for')
+        raise ValueError('Expected an object for {}'.format(repr(name)))
     elif t == 'array-index' and not isinstance(doc, list):
         raise ValueError('Expected a list')
 
@@ -128,8 +130,9 @@ def resolve(doc, jpath):
     """
     d = doc
     for t, v in _make_nodes(jpath):
-        _check_type(t, d)
-        d = d[v]
+        _check_type(t, d, v)
+        if v != '':
+            d = d[v]
 
     return d
 
@@ -170,7 +173,7 @@ def find(doc, jpath, joined=False):
     i = 0
     for i, (t, v) in enumerate(nodes):
         try:
-            _check_type(t, d)
+            _check_type(t, d, v)
         except ValueError:
             reason = 'type'
             break

@@ -73,10 +73,12 @@ def main():
         cmd = sys.argv[1]
         sys.argv = sys.argv[1:]
         try:
-            COMMANDS[cmd]()
+            handler = COMMANDS[cmd]
         except KeyError:
             print('Bad command:', cmd, file=sys.stderr)
             exit(-1)
+
+        handler()
 
 
 if __name__ == '__main__':

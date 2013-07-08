@@ -73,6 +73,8 @@ def test_resolve():
         ]
     }
     assert resolve(doc, jpath) == 'hit'
+    assert resolve(doc, "/") == doc
+    assert resolve(doc, "/a/") == doc['a']
 
 
 def test_create():
