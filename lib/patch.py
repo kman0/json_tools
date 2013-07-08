@@ -98,7 +98,7 @@ def main():
         data = patch(data, json.load(patch_file))
 
     f = open(args.input.name, 'w') if args.inplace else sys.stdout
-    print_json(data, args.colorize, f=f)
+    print_json(data, "/", args.colorize, f=f)
 
 
 if __name__ == '__main__':

@@ -123,4 +123,4 @@ if __name__ == '__main__':
     if not options.json_format:
         print_reduced(res, options.pretty)
     else:
-        print_json(res, options.pretty)
+        print_json(res, "/", options.pretty)

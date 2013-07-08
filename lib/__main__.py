@@ -55,7 +55,7 @@ def diff():
         exit(-1)
 
     res = json_tools.diff(local, other)
-    json_tools.print_json(res, options.colors)
+    json_tools.print_json(res, "/", options.colors)
 
 
 COMMANDS = {
