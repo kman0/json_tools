@@ -12,7 +12,7 @@ except:
 
 setup(
     name='json_tools',
-    version='0.3.2',
+    version='0.3.2-1',
 
     packages=['json_tools'],
     package_dir={'json_tools': 'lib'},
@@ -40,7 +40,8 @@ setup(
         'Topic :: Software Development',
         'Topic :: Software Development :: Libraries',
         'Topic :: Software Development :: Libraries :: Python Modules',
-        'Topic :: Utilities'
+        'Topic :: Utilities',
+        'License :: OSI Approved :: MIT License'        
     ],
 
     keywords=['json'],

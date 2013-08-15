@@ -3,6 +3,8 @@ JSON tools
 
 Manipulate JSON documents using ["JSON patch" format][1].
 
+This software is available under the [MIT License][http://opensource.org/licenses/MIT]
+
 Installation
 ------------
 
