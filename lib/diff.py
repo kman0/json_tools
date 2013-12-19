@@ -20,6 +20,8 @@ def diff(local, other):
                 'details': 'type',
                 'prev': l
             })
+            return
+
         delim = '/' if path != '/' else ''
 
         if isinstance(l, dict):

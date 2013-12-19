@@ -12,7 +12,7 @@ except:
 
 setup(
     name='json_tools',
-    version='0.3.2-1',
+    version='0.3.3',
 
     packages=['json_tools'],
     package_dir={'json_tools': 'lib'},
