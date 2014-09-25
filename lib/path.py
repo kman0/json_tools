@@ -118,7 +118,7 @@ def _check_type(t, doc, name):
 
 
 def _make_nodes(jpath):
-    if isinstance(jpath, basestring):
+    if isinstance(jpath, six.string_types):
         return split(jpath)
     elif isinstance(jpath, list):
         return jpath

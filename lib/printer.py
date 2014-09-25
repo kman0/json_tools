@@ -11,6 +11,8 @@ from __future__ import print_function
 import json
 import sys
 
+import six
+
 from . import path
 from .print_style import colorize, check_color_caps
 
@@ -58,7 +60,7 @@ def print_json(data, jpath, pretty=False, tab_size=4, f=sys.stdout):
                 view = _apply_style(view, 'red')
             elif isinstance(chunk, float):
                 view = _apply_style(view, 'red')
-            elif isinstance(chunk, basestring):
+            elif isinstance(chunk, six.string_types):
                 view = _apply_style(view, 'green')
             print(view, ',' if needs_comma else '', sep='', file=f)
 
