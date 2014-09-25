@@ -25,13 +25,13 @@ def diff(local, other):
         delim = '/' if path != '/' else ''
 
         if isinstance(l, dict):
-            for k, v in l.iteritems():
+            for k, v in l.items():
                 new_path = delim.join([path, k])
                 if k not in r:
                     res.append({'remove': new_path, 'prev': v})
                 else:
                     _recursive_diff(v, r[k], res, new_path)
-            for k, v in r.iteritems():
+            for k, v in r.items():
                 if k in l:
                     continue
                 res.append({
