@@ -6,6 +6,7 @@
 
 import re
 
+import six
 
 class JSONPathError(ValueError): pass
 
@@ -84,7 +85,7 @@ def split(path):
         This is the minimal set of types to support both JSON Pointer and
         some basic features of JSONPath.
     """
-    if not isinstance(path, basestring):
+    if not isinstance(path, six.string_types):
         raise TypeError("JSON path must be a string")
 
     if path.startswith('/'):

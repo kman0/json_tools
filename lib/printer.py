@@ -11,8 +11,8 @@ from __future__ import print_function
 import json
 import sys
 
-import path
-from print_style import colorize, check_color_caps
+from . import path
+from .print_style import colorize, check_color_caps
 
 
 def print_json(data, jpath, pretty=False, tab_size=4, f=sys.stdout):

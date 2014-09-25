@@ -7,7 +7,7 @@
 
 from __future__ import print_function
 
-import path
+from . import path
 
 
 def add(data, jpath, value, replace=False):

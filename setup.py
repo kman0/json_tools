@@ -12,11 +12,11 @@ except:
 
 setup(
     name='json_tools',
-    version='0.3.3',
+    version='0.3.4',
 
     packages=['json_tools'],
     package_dir={'json_tools': 'lib'},
-    install_requires=['colorama'],
+    install_requires=['colorama', 'six'],
 
     entry_points={
         'console_scripts': [
@@ -36,7 +36,6 @@ setup(
         'Intended Audience :: System Administrators',
         'Operating System :: Unix',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 2.6',
         'Topic :: Software Development',
         'Topic :: Software Development :: Libraries',
         'Topic :: Software Development :: Libraries :: Python Modules',
