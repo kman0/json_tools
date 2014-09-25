@@ -15,29 +15,25 @@ def add(data, jpath, value, replace=False):
 
         If the the path is already used, then no changes are made.
     """
-    if jpath == '/' and\
-       (hasattr(data, '__getitem__') or hasattr(data, '__iter__')):
-        match, remainder, d, reason = path.find(data, jpath)
+    match, remainder, d, reason = path.find(data, jpath)
 
-        if reason == 'type':
-            raise TypeError('Bad subdoc type after {}'
-                            .format(path.join(match)))
+    if reason == 'type':
+        raise TypeError('Bad subdoc type after {}'
+                        .format(path.join(match)))
 
-        if not reason:
-            if replace:
-                d = path.resolve(data, match[:-1])
-                d[match[-1][1]] = value
-        else:
-            sub_doc = path.create(remainder[1:], value)
-            name = remainder[0][1]
-            if reason == 'key':
-                d[name] = sub_doc
-            elif reason == 'index':
-                while len(d) < name:
-                    d.append(None)
-                d.append(sub_doc)
-    elif replace:
-        data = value
+    if not reason:
+        if replace:
+            d = path.resolve(data, match[:-1])
+            d[match[-1][1]] = value
+    else:
+        sub_doc = path.create(remainder[1:], value)
+        name = remainder[0][1]
+        if reason == 'key':
+            d[name] = sub_doc
+        elif reason == 'index':
+            while len(d) < name:
+                d.append(None)
+            d.append(sub_doc)
     return data
 
 
@@ -73,7 +69,12 @@ def patch(data, patch):
         if 'add' in change:
             add(data, change['add'], change['value'])
         elif 'replace' in change:
-            data = replace(data, change['replace'], change['value'])
+            if change['replace'] == '/' and\
+               not hasattr(data, '__getitem__') and\
+               not hasattr(data, '__iter__'):
+                data = change['value']
+            else:
+                replace(data, change['replace'], change['value'])
         elif 'remove' in change:
             remove(data, change['remove'])
     return data
