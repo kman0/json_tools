@@ -15,7 +15,8 @@ def add(data, jpath, value, replace=False):
 
         If the the path is already used, then no changes are made.
     """
-    if isinstance(data, dict) or isinstance(data, list):
+    if jpath == '/' and\
+       (hasattr(data, '__getitem__') or hasattr(data, '__iter__')):
         match, remainder, d, reason = path.find(data, jpath)
 
         if reason == 'type':
@@ -35,7 +36,7 @@ def add(data, jpath, value, replace=False):
                 while len(d) < name:
                     d.append(None)
                 d.append(sub_doc)
-    else:
+    elif replace:
         data = value
     return data
 
