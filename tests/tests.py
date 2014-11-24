@@ -3,9 +3,9 @@
 import logging
 import pprint
 
-from diff import diff
-from patch import patch
-from path import split, join, resolve
+from json_tools.diff import diff
+from json_tools.patch import patch
+from json_tools.path import split, join, resolve
 
 
 def test_simple_diff():

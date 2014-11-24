@@ -4,7 +4,7 @@
 """ Tests for 'diff' module.
 """
 
-from diff import diff
+from json_tools.diff import diff
 
 
 def test_diff_with_wrong_types():

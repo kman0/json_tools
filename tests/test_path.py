@@ -7,7 +7,7 @@
 import logging
 import pprint
 
-from path import split, join, resolve, find, create
+from json_tools.path import split, join, resolve, find, create
 
 
 def test_jpath_split():
