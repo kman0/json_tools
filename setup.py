@@ -12,7 +12,7 @@ except:
 
 setup(
     name='json_tools',
-    version='0.3.4',
+    version='0.3.5',
 
     packages=['json_tools'],
     package_dir={'json_tools': 'json_tools'},
@@ -43,7 +43,9 @@ setup(
         'License :: OSI Approved :: MIT License'        
     ],
 
-    keywords=['json'],
+    keywords=['json', 'json_tools', 'json-tools',
+              'diff', 'json_diff', 'json-diff',
+              'patch', 'json_patch', 'json-patch'],
 
     long_description=description
 )
