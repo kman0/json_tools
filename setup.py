@@ -15,7 +15,7 @@ setup(
     version='0.3.4',
 
     packages=['json_tools'],
-    package_dir={'json_tools': 'lib'},
+    package_dir={'json_tools': 'json_tools'},
     install_requires=['colorama', 'six'],
 
     entry_points={
